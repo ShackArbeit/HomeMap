@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+	<meta charset="UTF-8">
+	<title>Google Api Demo</title>
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<div class="wrapper">
+		<!-- Start header -->
+		<header class="header">
+			<div class="navbar">
+				<div class="container">
+					<a href="#!" class="brand">
+						<h1>Google API Demo</h1>
+					</a>
+					<ul class="nav">
+						<li class="nav-item">
+							<a href="#about" class="nav-link">About Google Map Api</a>
+						</li>
+						<li class="nav-item">
+							<a href="#js" class="nav-link">JavaScript API </a>
+						</li>
+						<li class="nav-item">
+							<a href="#mixApi" class="nav-link">Places & Directions API</a>
+						</li>
+						<li class="nav-item">
+							<a href="#other" class="nav-link">Other Functions</a>
+						</li>
+						<li class="nav-item">
+							<a href="#contact" class="nav-link">Contact Us</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</header>
+		<!-- End header -->
+
+		<!-- Start main -->
+		<section class="main">
+			
+			<!-- Start jumbotron -->
+			<div class="jumbotron">
+				<div class="mask-dark"></div>
+				<div class="container">
+					<div class="logo-image" style="background-image: url('images/common/JubLogo.png');"></div>
+					<div class="btn-group-center">
+						<a href="#!" class="btn btn-primary btn-lg">更多查看達康官網 !</a>
+					</div>
+				</div>
+			</div>
+			<!-- End jumbotron -->
+
+			<!-- Start about -->
+			<div id="about" class="hero hero-bg-white">
+				<div class="container">
+					<div class="row">
+						<div class="col-1-2">
+							<div class="about-preview">
+								<h3 class="title">Google Map API 簡介</h3>
+								<p class="para">
+									Google Maps API 是一套由 Google 提供的應用程式介面（API），允許開發者在其應用程式中集成 Google 地圖的功能 ! </br>
+									本 Demo 將使用Google Maps API 所提供的 JavaScript API 、Places API 以及 Directions API 做功能展示 !
+								</p>
+								<a href="https://developers.google.com/maps?hl=zh-tw" class="btn btn-primary"
+								    target="_blank"
+								>參閱 Goole Map 官網</a>
+							</div>
+						</div>
+						<div class="col-1-2">
+							<div class="image-container">
+								<div class="image" style="background-image: url('images/products/euro.png');"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- End about -->
+
+			<!-- Start JavaScript Api -->
+			<div id="js" class="hero hero-bg-grey">
+				<div class="container">
+					<div class="section-intro">
+						<h2 class="title">JavaScript API </h2>
+						<p class="para">這裡展示如地圖操作、標記建立、群聚 !
+					</div>
+					<div class="row">
+						<div class="col-1-3">
+							<div class="service-item">
+								<div class="image-container">
+									<div class="image" style="background-image: url('images/products/malMap.jpg')"></div>
+								</div>
+								<div class="preview">
+									<h4 class="title">操控地圖</h4>
+									<h5 class="subtitle">經緯度、地址、Zoom </h5>
+									<p class="para">透過不同的經緯度值、地址、Zoom 大小值取得特定範圍的地圖。	           
+									</p>
+									<a href="Home.html" class="btn btn-secondary"
+									  target="_blank"
+									>Check Demo</a>
+								</div>
+							</div>	
+						</div>
+						<div class="col-1-3">
+							<div class="service-item">
+								<div class="image-container">
+									<div class="image" style="background-image: url('images/products/marker.png')"></div>
+								</div>
+								<div class="preview">
+									<h4 class="title">標記地圖</h4>
+									<h5 class="subtitle">經緯度、外部 URL</h5>
+									<p class="para">透過不同的經緯度值、外部 URL 將靜態或動態的 Marker 標記在地圖上。</p>
+									<a href="Mark.html" class="btn btn-secondary" target="_blank">Check Demo</a>
+								</div>
+							</div>	
+						</div>
+						<div class="col-1-3">
+							<div class="service-item">
+								<div class="image-container">
+									<div class="image" style="background-image: url('images/products/cluster.jpg')"></div>
+								</div>
+								<div class="preview">
+									<h4 class="title">群聚展示</h4>
+									<h5 class="subtitle">Marker 群聚</h5>
+									<p class="para">將多點的經緯度值匯聚成群聚顯示</p>
+									<a href="Cluster.html" class="btn btn-secondary" target="_blank">Check Demo</a>
+								</div>
+							</div>	
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- End services -->
+
+			<!-- Start ProService -->
+			<div id="proService" class="hero reservation">
+				<div class="mask-dark"></div>
+				<div class="container">
+					<div class="section-intro">
+						<h2 class="title">更多服務</h2>
+						<p class="para">想要獲取並了解更多地圖專業服務嗎 ?<br>請上全國達康官網查看 !!
+						
+						</p>
+					</div>
+					<div class="btn-group-center">
+						<a href="https://www.trend-go.com/" class="btn btn-primary btn-lg"
+						   target="_blank"
+						>達康官網</a>
+					</div>
+				</div>
+			</div>
+			<!-- End reservation -->
+
+			<!-- Start MixApi -->
+			<div id="mixApi" class="hero">
+				<div class="container">
+					<div class="section-intro">
+						<h2 class="title">Places & Directions API</h2>
+						<p class="para">我們提供的服務在這裡有初步的介紹，諸如此類的介紹等等<br>多的文字就可以換行繼續寫</p>
+					</div>
+					<div class="menu-list">
+						<div class="title-bar">
+							<h3 class="title">Coffee & Beverage</h3>
+							<a href="#!" class="btn btn-secondary">more</a>
+						</div>
+						<div class="row">
+							<div class="col-1-4">
+								<a href="#!">
+									<div class="list-item">
+										<div class="image-container">
+											<div class="image" style="background-image: url('images/products/product005.jpg');"></div>
+										</div>
+										<div class="preview">
+											<h5 class="title">阿拉斯加咖啡</h5>
+											<h6 class="subtitle">供應的條件</h6>
+										</div>
+									</div>
+								</a>
+							</div>
+							<div class="col-1-4">
+								<a href="#!">
+									<div class="list-item">
+										<div class="image-container">
+											<div class="image" style="background-image: url('images/products/product006.jpg');"></div>
+										</div>
+										<div class="preview">
+											<h5 class="title">阿拉斯加咖啡</h5>
+											<h6 class="subtitle">供應的條件</h6>
+										</div>
+									</div>
+								</a>
+							</div>
+							<div class="col-1-4">
+								<a href="#!">
+									<div class="list-item">
+										<div class="image-container">
+											<div class="image" style="background-image: url('images/products/product007.jpg');"></div>
+										</div>
+										<div class="preview">
+											<h5 class="title">阿拉斯加咖啡</h5>
+											<h6 class="subtitle">供應的條件</h6>
+										</div>
+									</div>
+								</a>
+							</div>
+							<div class="col-1-4">
+								<a href="#!">
+									<div class="list-item">
+										<div class="image-container">
+											<div class="image" style="background-image: url('images/products/product008.jpg');"></div>
+										</div>
+										<div class="preview">
+											<h5 class="title">阿拉斯加咖啡</h5>
+											<h6 class="subtitle">供應的條件</h6>
+										</div>
+									</div>
+								</a>
+							</div>
+						</div>
+					</div>
+					<div class="menu-list">
+						<div class="title-bar">
+							<h3 class="title">Coffee & Beverage</h3>
+							<a href="#!" class="btn btn-secondary">more</a>
+						</div>
+						<div class="row">
+							<div class="col-1-4">
+								<a href="#!">
+									<div class="list-item">
+										<div class="image-container">
+											<div class="image" style="background-image: url('images/products/product005.jpg');"></div>
+										</div>
+										<div class="preview">
+											<h5 class="title">阿拉斯加咖啡</h5>
+											<h6 class="subtitle">供應的條件</h6>
+										</div>
+									</div>
+								</a>
+							</div>
+							<div class="col-1-4">
+								<a href="#!">
+									<div class="list-item">
+										<div class="image-container">
+											<div class="image" style="background-image: url('images/products/product006.jpg');"></div>
+										</div>
+										<div class="preview">
+											<h5 class="title">阿拉斯加咖啡</h5>
+											<h6 class="subtitle">供應的條件</h6>
+										</div>
+									</div>
+								</a>
+							</div>
+							<div class="col-1-4">
+								<a href="#!">
+									<div class="list-item">
+										<div class="image-container">
+											<div class="image" style="background-image: url('images/products/product007.jpg');"></div>
+										</div>
+										<div class="preview">
+											<h5 class="title">阿拉斯加咖啡</h5>
+											<h6 class="subtitle">供應的條件</h6>
+										</div>
+									</div>
+								</a>
+							</div>
+							<div class="col-1-4">
+								<a href="#!">
+									<div class="list-item">
+										<div class="image-container">
+											<div class="image" style="background-image: url('images/products/product008.jpg');"></div>
+										</div>
+										<div class="preview">
+											<h5 class="title">阿拉斯加咖啡</h5>
+											<h6 class="subtitle">供應的條件</h6>
+										</div>
+									</div>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- End menu -->
+
+			<!-- Start contact -->
+			<div id="contact" class="hero hero-bg-grey">
+				<div class="container">
+					<div class="section-intro">
+						<h2 class="title">CONTACT</h2>
+						<p class="para">空間數據應用與分析、GIS系統設計與建置、各類空間產品銷售<br>獨家商圈人流數據分析、地圖開發工具Maps-API</p>
+					</div>
+					<div class="row">
+						<div class="col-1-2">
+							<div class="contact-info">
+								<div class="info-item">
+									<h4 class="title"><span>PHONE & TEL</span></h4>
+									<a href="tel:0912345678" class="info"> 02 8228 0660</a>
+								</div>
+								<div class="info-item">
+									<h4 class="title"><span>LOCATION</span></h4>
+									<a href="#!" class="info">新北市中和區中正路716號16樓</a>
+								</div>
+								<div class="info-item">
+									<h4 class="title"><span>HOURS</span></h4>
+									<div class="info">上午 09:00 至下午 6:00、六日休息</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-1-2">
+							<div class="map-container">
+								<iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d14464.33099904678!2d121.4856!3d24.997304!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x34680283fe2a5f3f%3A0xc6a146b34ba14751!2z5YWo5ZyL6YGU5bq36IKh5Lu95pyJ6ZmQ5YWs5Y-4!5e0!3m2!1szh-TW!2stw!4v1705653786977!5m2!1szh-TW!2stw" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- End contact -->
+
+		</section>
+		<!-- End main -->
+
+		<!-- Start footer -->
+		<footer class="footer">
+			<div class="hero">
+				<div class="mask-dark"></div>
+				<div class="container">
+					<a href="#!" class="brand"></a>
+					<ul class="nav">
+						<li class="nav-item">
+							<a href="#about" class="nav-link">About Google Map Api</a>
+						</li>
+						<li class="nav-item">
+							<a href="#js" class="nav-link">JavaScript API </a>
+						</li>
+						<li class="nav-item">
+							<a href="#mixApi" class="nav-link">Places & Directions API</a>
+						</li>
+						<li class="nav-item">
+							<a href="#other" class="nav-link">Other Functions</a>
+						</li>
+						<li class="nav-item">
+							<a href="#contact" class="nav-link">Contact Us</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="copyright">
+				<p>© Copyright 2022 All rights reserved by Shack</p>
+			</div>
+		</footer>
+		<!-- End footer -->
+	</div>
+</body>
+</html>

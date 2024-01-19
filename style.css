@@ -1,0 +1,118 @@
+*{
+    position:relative;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+#map{
+    width:100vw;
+    height:100vh;
+}
+.informationBox{
+    display:none;
+    position: absolute;
+    top: 180px; 
+    left: 10px; 
+    z-index: 1000; 
+    background-color: white; 
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    max-width: 300px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+}
+
+
+// 以下為 Place Library ,Search Places 的樣式設定 ( PlaceSearch.html )
+#sidebar {
+    flex: 1;
+    padding: 1rem;
+    max-width: 30rem; 
+    height: 100%;
+    box-sizing: border-box;
+    overflow: auto;
+ } 
+#map2 {
+    height:100vh; 
+    width:100vw;
+  }
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: scroll;
+    flex-grow: 1;
+}
+li {
+    background-color: #f1f1f1;
+    padding: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 1.25rem;
+    cursor: pointer;
+} 
+li:nth-child(odd) {
+    background-color: #fcfcfc;
+}
+// 以下為不同地圖的 Style 
+.map-control {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 2px rgba(33, 33, 33, 0.4);
+  font-family: "Roboto", "sans-serif";
+  margin: 10px;
+  display: none;
+}
+
+#map .map-control {
+  display: block;
+}
+
+.selector-control {
+  font-size: 18px;
+  line-height: 30px;
+  padding-left: 5px;
+  padding-right: 5px;
+  width:200px;
+  height:50px;
+}
+// 以下為 RoadPath 樣式設定的部分
+
+#panel {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  margin-left: -180px;
+  z-index: 5;
+  background-color: #fff;
+  padding: 5px;
+  border: 1px solid #999;
+}
+
+#bar {
+  width: 240px;
+  background-color: #d2e4ff;
+  margin: 8px;
+  padding: 10px;
+  border-radius: 4px;
+  top:100px;
+}
+
+#autoc {
+  width: 100%;
+  height:100%;
+  font-size:18px;
+}
+#clear{
+  position:absolute;
+  color:#fff;
+  z-index:100;
+  top:130px;
+  left:50px;
+  background-color:#0063ff;
+  width:100px;
+  height:40px;
+  text-align:center;
+  padding:9px;
+  border-radius:5px;
+}
