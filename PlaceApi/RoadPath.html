@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="../style.css" />
+    <title>Roads API Demo</title>
+    <style>
+        .sideControl{
+              width:20vw;
+              height:100vh;
+              text-align:center;
+              display:flex;
+              align-items:center;
+              justify-content: center;
+              flex-direction:column;
+              color:#fff;
+              background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(15,254,179,1) 26%, rgba(208,253,255,1) 47%, rgba(0,212,255,1) 100%);
+          }
+          #clear {
+                position: absolute;
+                top: 18%;
+                left: 24%;
+                transform: translate(-50%, -50%);
+                padding: 10px;
+                background-color: #0f70fe; 
+                color:#fff;
+                cursor: pointer;
+            }
+      </style>
+    <script src="https://www.gstatic.com/external_hosted/jquery2.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=drawing,places&key=AIzaSyCpAqja_IdyYYjkHPCp7WonW1ToQBDNNuc"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        let apiKey = 'AIzaSyCpAqja_IdyYYjkHPCp7WonW1ToQBDNNuc';
+        let map;
+        let drawingManager;
+        let placeIdArray = [];
+        let polylines = [];
+        let snappedCoordinates = [];
+        let totalDistanceKM;
+        let markers = [];
+
+        function initialize() {
+            const mapOptions = {
+                zoom: 15,
+                center: { lat: 25.0676843, lng: 121.5280133 }
+            };
+            map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+            // 新增地點搜尋框。 搜尋某個地點後，地圖就會以該地點為中心
+            let autocInput = document.getElementById('autoc');
+            if (autocInput) {
+                map.controls[google.maps.ControlPosition.LEFT_TOP].push(document.getElementById('bar'));
+                let autocomplete = new google.maps.places.Autocomplete(autocInput);
+                autocomplete.bindTo('bounds', map);
+                autocomplete.addListener('place_changed', function () {
+                    let place = autocomplete.getPlace();
+                    if (place.geometry.viewport) {
+                        map.fitBounds(place.geometry.viewport);
+                    } else {
+                        map.setCenter(place.geometry.location);
+                        map.setZoom(15);
+                    }
+                });
+            } else {
+                console.error("Input element with id 'autoc' not found.");
+            }
+
+            // 啟用折線繪製控制項。 點擊地圖開始繪製折線
+            // 每次點擊都會新增一個新頂點。 雙擊停止繪製。
+            drawingManager = new google.maps.drawing.DrawingManager({
+                drawingMode: google.maps.drawing.OverlayType.POLYLINE,
+                drawingControl: true,
+                drawingControlOptions: {
+                    position: google.maps.ControlPosition.TOP_CENTER,
+                    drawingModes: [
+                        google.maps.drawing.OverlayType.POLYLINE
+                    ]
+                },
+                polylineOptions: {
+                    strokeColor: '#008aff',
+                    strokeWeight: 5,
+                    strokeOpacity: 0.6,
+                }
+            });
+            drawingManager.setMap(map);
+
+            // 折線完成後繪製道路。
+            drawingManager.addListener('polylinecomplete', function (poly) {
+                let path = poly.getPath();
+                polylines.push(poly);
+                placeIdArray = [];
+                runSnapToRoad(path);
+                for (let i = 0; i < path.getLength(); i++) {
+                    let marker = new google.maps.Marker({
+                        position: path.getAt(i),
+                        map: map,
+                        title: 'Marker ' + (i + 1)  // 可以根據需要更改標題
+                    });
+                    markers.push(marker);
+                }
+            });
+
+            // 清除按鈕。 按一下可刪除所有多段線。
+            let clearButton = document.getElementById('clear');
+            if (clearButton) {
+                clearButton.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    // 刪除所有多段線
+                    for (let i = 0; i < polylines.length; ++i) {
+                        polylines[i].setMap(null);
+                    }
+                    polylines = [];
+                    // 刪除所有標記
+                    for (let i = 0; i < markers.length; ++i) {
+                        markers[i].setMap(null);
+                    }
+                    markers = [];
+                    return false;
+                });
+            } else {
+                console.error("Button element with id 'clear' not found.");
+            }
+        }
+
+        // 將使用者建立的折線捕捉到道路並繪製捕捉的路徑
+        function runSnapToRoad(path) {
+            let pathValues = [];
+            for (let i = 0; i < path.getLength(); i++) {
+                pathValues.push(path.getAt(i).toUrlValue());
+            }
+
+            $.get('https://roads.googleapis.com/v1/snapToRoads', {
+                interpolate: true,
+                key: apiKey,
+                path: pathValues.join('|')
+            }, function (data) {
+                console.log(data);
+                processSnapToRoadResponse(data);
+                drawSnappedPolyline();
+            });
+        }
+
+        // 儲存捕捉到道路服務返回的捕捉折線。
+        function processSnapToRoadResponse(data) {
+            snappedCoordinates = [];
+            placeIdArray = [];
+            let totalDistance = 0; // 新增總距離變數
+            for (let i = 0; i < data.snappedPoints.length; i++) {
+                let latlng = new google.maps.LatLng(
+                    data.snappedPoints[i].location.latitude,
+                    data.snappedPoints[i].location.longitude);
+                snappedCoordinates.push(latlng);
+                placeIdArray.push(data.snappedPoints[i].placeId);
+            }
+        }
+
+        // 繪製捕捉的折線（處理捕捉到道路反應後）。
+        // 在 drawSnappedPolyline 函數中調用獲取總距離的函數
+        function drawSnappedPolyline() {
+            let snappedPolyline = new google.maps.Polyline({
+                path: snappedCoordinates,
+                strokeColor: '#00ff66',
+                strokeWeight: 5,
+                strokeOpacity: 0.9,
+            });
+
+            snappedPolyline.setMap(map);
+            polylines.push(snappedPolyline);
+
+            // 調用函數以獲取總距離
+            calculateTotalDistance();
+        }
+
+        // 新增函數以獲取總距離
+        function calculateTotalDistance() {
+            let totalDistance = 0;
+            for (let i = 1; i < snappedCoordinates.length; i++) {
+                totalDistance += google.maps.geometry.spherical.computeDistanceBetween(
+                    snappedCoordinates[i - 1], snappedCoordinates[i]
+                );
+            }
+            totalDistanceKM = totalDistance / 1000;
+            Swal.fire({
+                title: '總距離',
+                text: `總距離為 ${totalDistanceKM} 公里`,
+                icon: 'success',
+                confirmButtonText: 'Got It !'
+            });
+            console.log('總距離為:', totalDistance, '公尺');
+            console.log('總距離為:', totalDistanceKM, '公里');
+        }
+
+        // 在 window.load 時呼叫 initialize 函數
+        $(window).load(initialize);
+    </script>
+</head>
+
+<body>
+<iframe src="../Layout/Header.html" width="100%" height="64px"  frameborder="0"></iframe>
+<div style="display:flex;flex-direction:row;position:relative; bottom:4px;height:100%">
+    <div class="sideControl">
+        <h2>此 Demo 使用 Places API 加上 Directions API ，選取多個地點， Google 會自動計算所選取範圍內最有可能的路定
+            並返回該路徑的總距離，你可以按下取消繪製按鈕再次選區新的範圍。
+        </h2>
+    </div>
+    <div id="map" style="height:100vh;width:80vw;"></div>
+    <div id="clear">取消繪製</div>
+    <div id="bar">
+        <p class="auto"><input type="text" id="autoc"/></p>
+    </div>
+    <!-- <p id="dis">總距離為 ：　　公里</p> -->
+</body>
+</html>
