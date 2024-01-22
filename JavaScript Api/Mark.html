@@ -8,52 +8,78 @@
     <link rel="stylesheet" type="text/css" href="./style.css" />
   </head>
   <body>
-    <div id="map" style="height:70vh;width:100vw;"></div>
-    <div class="d-flex justify-content-around">
-    <div class="d-flex flex-column mx-4 mt-3">
-          <label for="zoom" class="mb-2 fs-2 text-danger">跳動 Marker</label>
-        <input type="text" id="jumplat" placeholder="請輸入緯度" 
-        class="mb-4 mt-3"
-        style="max-width: 300px;border:2px solid #008aff">
-        <input type="text" id="jumplon" placeholder="請輸入經度"
-        class="mb-4 "
-        style="max-width: 300px;border:2px solid #008aff"
-        >
-        <input type="text" id="jumpValue" placeholder="請輸入 Marker 的標題"
-        class="mb-4 "
-        style="max-width: 300px;border:2px solid #008aff"
-        >
-        <input type="text" id="outIcon" placeholder="引入外部 Icon URL "
-        class="mb-4 "
-        style="max-width: 300px;border:2px solid #008aff"
-        >
-        <button onclick="JumpMarker()"
-        class="btn btn-primary"
-        style="max-width: 200px;"
-        >建立跳動 Marker</button>
+    <iframe src="../Layout/Header.html" width="100%" height="64px"  frameborder="0"></iframe> 
+    <div style="display:flex;flex-direction:row;position:relative; bottom:1px;height:100vh">
+      <div class="accordion" id="accordionExample" style="width:20vw;height:100vh">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              跳動 Marker
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <div class="d-flex flex-column mx-4 mt-3">
+                <label for="zoom" class="mb-2 fs-2 text-danger">跳動 Marker</label>
+              <input type="text" id="jumplat" placeholder="請輸入緯度" 
+              class="mb-4 mt-3"
+              style="max-width: 300px;border:2px solid #008aff">
+              <input type="text" id="jumplon" placeholder="請輸入經度"
+              class="mb-4 "
+              style="max-width: 300px;border:2px solid #008aff"
+              >
+              <input type="text" id="jumpValue" placeholder="請輸入 Marker 的標題"
+              class="mb-4 "
+              style="max-width: 300px;border:2px solid #008aff"
+              >
+              <input type="text" id="outIcon" placeholder="引入外部 Icon URL "
+              class="mb-4 "
+              style="max-width: 300px;border:2px solid #008aff"
+              >
+              <button onclick="JumpMarker()"
+              class="btn btn-primary"
+              style="max-width: 200px;"
+              >建立跳動 Marker</button>
+          </div>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              靜態 Marker
+            </button>
+          </h2>
+          <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <div class="d-flex flex-column mx-4 mt-3">
+                <label for="zoom" class="mb-2 fs-2 text-danger">靜態 Marker</label>
+              <input type="text" id="jumplat2" placeholder="請輸入緯度" 
+              class="mb-4 mt-3"
+              style="max-width: 300px;border:2px solid #008aff">
+              <input type="text" id="jumplon2" placeholder="請輸入經度"
+              class="mb-4 "
+              style="max-width: 300px;border:2px solid #008aff"
+              >
+              <input type="text" id="jumpValue2" placeholder="請輸入 Marker 的標題"
+              class="mb-4 "
+              style="max-width: 300px;border:2px solid #008aff"
+              >
+              <input type="text" id="outIcon2" placeholder="引入外部 Icon URL "
+              class="mb-4 "
+              style="max-width: 300px;border:2px solid #008aff"
+              >
+              <button onclick="JumpMarker2()"
+              class="btn btn-primary"
+              style="max-width: 200px;"
+              >建立靜態 Marker</button>
+        </div>
+            </div>
+          </div>
+        </div>
+
     </div>
-    <div class="d-flex flex-column mx-4 mt-3">
-            <label for="zoom" class="mb-2 fs-2 text-danger">靜態 Marker</label>
-          <input type="text" id="jumplat2" placeholder="請輸入緯度" 
-          class="mb-4 mt-3"
-          style="max-width: 300px;border:2px solid #008aff">
-          <input type="text" id="jumplon2" placeholder="請輸入經度"
-          class="mb-4 "
-          style="max-width: 300px;border:2px solid #008aff"
-          >
-          <input type="text" id="jumpValue2" placeholder="請輸入 Marker 的標題"
-          class="mb-4 "
-          style="max-width: 300px;border:2px solid #008aff"
-          >
-          <input type="text" id="outIcon2" placeholder="引入外部 Icon URL "
-          class="mb-4 "
-          style="max-width: 300px;border:2px solid #008aff"
-          >
-          <button onclick="JumpMarker2()"
-          class="btn btn-primary"
-          style="max-width: 200px;"
-          >建立靜態 Marker</button>
-    </div>
+    <div id="map" style="height:100vh;width:80vw;"></div>
     </div>
     <script>
     (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
