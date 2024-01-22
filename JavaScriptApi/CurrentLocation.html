@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../style.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .sideControl{
+            width:20vw;
+            height:100vh;
+            text-align:center;
+            display:flex;
+            align-items:center;
+            justify-content: center;
+            flex-direction:column;
+            background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(255,82,82,1) 26%, rgba(208,253,255,1) 47%, rgba(0,212,255,1) 100%);
+        }
+    </style>
+    <title>Current Location</title>
+</head>
+<body>
+    <iframe src="../Layout/Header.html" width="100%" height="64px"  frameborder="0"></iframe> 
+    <div style="display:flex;flex-direction:row;
+              position:relative; bottom:5px;height:100vh">
+    <div class="sideControl">
+        <div style="margin-bottom:10px;color:#fff">
+        <h4>
+        地圖預設的緯度是 -34.397 度，經度是 150.644 度，
+        請點擊下方按鈕獲取你所在位置的經緯度範圍
+         </h4>
+        </div>
+    </div>
+    <div id="map" style="width:80vw;height:100vh" ></div>
+    </div>
+    <script>
+        (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+        ({key: "AIzaSyCpAqja_IdyYYjkHPCp7WonW1ToQBDNNuc", v: "beta"});
+
+       let map, infoWindow;
+       async function initMap() {
+    const { Map } = await google.maps.importLibrary("maps");
+    map = new Map(document.getElementById("map"), {
+        center: { lat: -34.397, lng: 150.644 },
+        zoom: 6,
+    });
+
+    setTimeout(() => {
+        Swal.fire({
+            title: '取得目前經緯度範圍',
+            text: '目前的緯度是 -34.397 度，經度是 150.644 度，請點擊左上角按鈕獲取你所在位置的經緯度範圍',
+            icon: 'success',
+            confirmButtonText: 'Cool !'
+        });
+    }, 5000);
+
+    infoWindow = new google.maps.InfoWindow({
+        content: "這是目前你所處的經緯度範圍!",
+        maxWidth: 300,
+    });
+
+    const locationButton = document.createElement("button");
+    locationButton.textContent = "點擊此按鈕獲取現在位置";
+    locationButton.style.fontSize = '18px';
+    locationButton.style.backgroundColor = '#1569e8';
+    locationButton.style.color = '#fff';
+    locationButton.style.borderRadius = '5px';
+    locationButton.style.padding='10px';
+    locationButton.classList.add("custom-map-control-button");
+
+    // 找到那個寬度為 20vw、高度為 100vh 的 <div>
+    const sidePanel = document.querySelector('.sideControl');
+
+    // 將 locationButton 加入到 sidePanel 中
+    sidePanel.appendChild(locationButton);
+
+    locationButton.addEventListener("click", () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                    };
+                    infoWindow.setPosition(pos);
+                    infoWindow.open(map);
+                    map.setCenter(pos);
+                },
+                () => {
+                    handleLocationError(true, infoWindow, map.getCenter());
+                }
+            );
+        } else {
+            handleLocationError(false, infoWindow, map.getCenter());
+        }
+    });
+}
+
+        initMap()
+        function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(
+            browserHasGeolocation
+            ? "Error: The Geolocation service failed."
+            : "Error: Your browser doesn't support geolocation."
+        );
+        infoWindow.open(map);
+        }
+
+    </script>
+</body>
+</html>

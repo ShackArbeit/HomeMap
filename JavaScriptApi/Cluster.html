@@ -18,8 +18,10 @@
     <iframe src="../Layout/Header.html" width="100%" height="64px"  frameborder="0"></iframe> 
     <div style="display:flex;flex-direction:row;position:relative; bottom:6px;height:100vh">
         <div style="display:flex;flex-direction:row;position:relative; bottom:1px;height:100vh">
-        <div style="width:20vw;height:100vh" class="text-center pt-5">
-            <h3>
+        <div style="width:20vw;height:100vh;text-align:center;display:flex;align-items:center;
+                    justify-content: center;background:
+                    linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(255,82,82,1) 26%, rgba(208,253,255,1) 47%, rgba(0,212,255,1) 100%);" >
+            <h3 style="color:#fff">
                 Cluster 是輸入將多個相近位置的經緯度值以產生，此 Demo 以台北市區為主。
             </h3>
            </div>
@@ -37,7 +39,7 @@
                 content: "",
                 disableAutoPan: true,
                 });
-                const labels = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const labels = "ABCDEFGHIJKLMNOPQRSTUVWX";
                 const markers = locations.map((position, i) => {
                 const label = labels[i % labels.length];
                 const marker = new google.maps.Marker({
