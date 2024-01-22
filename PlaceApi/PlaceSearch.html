@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="../style.css" />
+    <title> Place Search </title>
+</head>
+<body>
+    <iframe src="../Layout/Header.html" width="100%" height="64px"  frameborder="0"></iframe> 
+    <div style="display:flex;flex-direction:row;position:relative; bottom:6px;height:100%">
+        <div class="accordion" id="accordionExample" style="width:20vw;height:100%">
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                  請先輸入地址定位範圍
+                </button>
+              </h2>
+              <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <div class="container-fluid d-flex flex-column">
+                        <label for="locationInput" class="fs-3 mb-3">地址找搜尋範圍</label>
+                        <input type="text" id="locationInput" placeholder="請輸入地址..." class="mb-3">
+                        <button onclick="SearchLocation()" class="btn btn-primary">跳轉到地址</button>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                  接著輸入欲搜尋的地點類型
+                </button>
+              </h2>
+              <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <div class="container-fluid d-flex flex-column mb-3 ">
+                        <label for="placeType" class="fs-3 mb-3">搜尋想要的地點類型:</label>
+                        <input type="text" id="placeType" placeholder="如Park、School、Church..." class="mb-3">
+                        <button onclick="SearchType()" class="btn btn-primary">搜尋</button>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    最後請查看結果
+                  </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                  <div class="accordion-body">
+                    <div id="sidebar" class="mt-5">
+                        <h2 class="fs-2">搜尋結果</h2>
+                        <ul id="places"></ul>
+                        <button id="more" class="btn btn-primary">更多結果</button>
+                      </div>
+                  </div>
+                </div>
+              </div>
+          </div> 
+        <div id="map2" style="height:165vh;width:80vw;"></div>
+      </div>
+    <script>
+        (g => {
+            var h, a, k, p = "The Google Maps JavaScript API",
+                c = "google",
+                l = "importLibrary",
+                q = "__ib__",
+                m = document,
+                b = window;
+            b = b[c] || (b[c] = {});
+            var d = b.maps || (b.maps = {}),
+                r = new Set,
+                e = new URLSearchParams,
+                u = () => h || (h = new Promise(async(f, n) => {
+                    await(a = m.createElement("script"));
+                    e.set("libraries", [...r] + "");
+                    for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]);
+                    e.set("callback", c + ".maps." + q);
+                    a.src = `https://maps.${c}apis.com/maps/api/js?` + e;
+                    d[q] = f;
+                    a.onerror = () => h = n(Error(p + " could not load."));
+                    a.nonce = m.querySelector("script[nonce]")?.nonce || "";
+                    m.head.append(a);
+                }));
+            d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n));
+        })({
+            key: "AIzaSyCpAqja_IdyYYjkHPCp7WonW1ToQBDNNuc",
+            v: "beta",
+            libraries: 'places'
+        });
+
+        let map, service,marker,locationInputInit
+        let pyrmont = { lat: 0, lng: 0 }; 
+        async function initMap() {
+            // 初始化地圖
+            
+            const { Map } = await google.maps.importLibrary("maps");
+            map = new Map(document.getElementById('map2'), {
+                zoom: 12,
+                center: {lat:25.0676843 ,lng: 121.5280133},
+                mapId: '46b530e75dd3cc36',
+            });
+
+            // 創建 PlacesService 實例
+            service = new google.maps.places.PlacesService(map);
+            locationInputInit=new google.maps.places.Autocomplete(
+                document.getElementById("locationInput")
+            );
+        }
+
+        initMap();
+
+        let getNextPage;
+        const moreButton = document.getElementById("more");
+        moreButton.onclick = function () {
+            moreButton.disabled = true;
+            if (getNextPage) {
+                getNextPage();
+            }
+        };
+        function SearchLocation(){
+             const locationInput=document.getElementById("locationInput")
+             console.log(locationInput)
+             const location=locationInput.value.trim();
+             const geocoder = new google.maps.Geocoder();
+             geocoder.geocode({'address':location},function(result,status){
+                 if(status==='OK'){
+                     console.log(result)
+                     const Range=result[0].geometry.location;
+                     const latitude=Range.lat();
+                     const longitude=Range.lng();
+                     const radius = 5; // 半徑5公里
+                     const latDelta = radius / 110.54; 
+                     const lngDelta = radius / (111.32 * Math.cos((Range.lat() * Math.PI) / 180)); 
+                     pyrmont = { 
+                         lat: latitude, 
+                         lng: longitude,
+                         latDelta,
+                         lngDelta,
+                      }; 
+                     console.log('緯度是:'+latitude,'經度是:'+longitude)
+                     map.setCenter(Range);
+                     map.setZoom(15);
+                     SearchType();
+                 }else{
+                     console.log('編輯失敗'+status)
+                 }
+             })
+         }
+
+        function SearchType() {
+            const placeInput = document.getElementById("placeType");
+            const placeType = placeInput.value.trim().toLowerCase();
+            if (placeType !== '') {
+                service.nearbySearch(
+                    { location: pyrmont, radius: 10000, type: placeType },
+                    (results, status, pagination) => {
+                        if (status !== "OK" || !results) return;
+                        document.getElementById("places").innerHTML = "";
+                        // 顯示新的搜尋結果
+                        // console.log(results)
+                        addPlaces(results, map);
+                        // 啟用或禁用 "Load more results" 按鈕
+                        moreButton.disabled = !pagination || !pagination.hasNextPage;
+                        if (pagination && pagination.hasNextPage) {
+                            getNextPage = () => {
+                                pagination.nextPage();
+                            };
+                        }
+                    }
+                );
+            }
+        }
+        function addPlaces(places, map) {
+            const placesList = document.getElementById("places");
+            for (const place of places) {
+                if (place.geometry && place.geometry.location) {
+                    const image = {
+                        url: place.icon,
+                        size: new google.maps.Size(71, 71),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(17, 34),
+                        scaledSize: new google.maps.Size(25, 25),
+                    };
+                    console.log(place)
+                    console.log(place.name)
+                    console.log(place.vicinity)
+                    // 添加標記到地圖
+                    marker=new google.maps.Marker({
+                        map,
+                        icon: image,
+                        title: place.name,
+                        position: place.geometry.location,
+                    });
+                    const li = document.createElement("li");
+
+                    li.textContent = place.name;
+                    placesList.appendChild(li);
+                    li.addEventListener("click", () => {
+                        map.setCenter(place.geometry.location);
+                        map.setZoom(15); // 設置放大級別以更清晰顯示地點
+                        // 顯示該地點的信息視窗
+                        const infowindow = new google.maps.InfoWindow({
+                            content: `<strong>${place.name}</strong><br>地址: ${place.vicinity}<br>在Google地圖上查看: <a href="https://www.google.com/maps/search/?api=1&map_action=map&zoom=16&query=${encodeURIComponent(place.vicinity)}" target="_blank">點擊這裡</a>`,
+                        });
+                        infowindow.open(map, marker);
+                    });
+        
+                }
+            }
+        }
+
+    </script>
+</body>
+</html>
