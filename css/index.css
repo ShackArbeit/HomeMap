@@ -172,6 +172,9 @@ a{
 .hero.hero-bg-grey{
 	background-color: #efefef;
 }
+.hero.hero-bg-light{
+	background-color:#f7fffc;
+}
 
 /* navbar */
 .navbar{

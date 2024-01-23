@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../style.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <style>
+      .sideControl{
+          width:20vw;
+          height:100vh;
+          text-align:center;
+          display:flex;
+          align-items:center;
+          justify-content: center;
+          flex-direction:column;
+          color:#fff;
+          background-color: #000000;
+      }
+  </style>
+    <title>HotDots Map</title>
+  </head>
+  <body>
+    <iframe src="../Layout/Header.html" width="100%" height="64px"  frameborder="0"></iframe> 
+    <div style="display:flex;flex-direction:row;
+              position:relative; bottom:6px;height:100vh">
+     <div class="sideControl">
+      <div style="margin-bottom:10px;color:#fff">
+      <h4>
+          使用 Firebase Realtime Database 做為多個選取點的資料庫加上 JavaScript API 內部函式，
+          選取的點將會在地圖上顯示十分鐘 !
+       </h4>
+      </div>
+  </div>
+    <div id="map" style="width:80vw;height:100vh"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-database.js"></script>  
+    <script >
+        
+  const firebaseConfig = {
+    apiKey: "AIzaSyAPbLPncvqcD70e320MJOAOjADrfVtEVRE",
+    authDomain: "fir-4b287.firebaseapp.com",
+    projectId: "fir-4b287",
+    storageBucket: "fir-4b287.appspot.com",
+    messagingSenderId: "483980711297",
+    appId: "1:483980711297:web:8cd524ac467c701cfb4480",
+    measurementId: "G-NQG9VJCGK8",
+    databaseURL: "https://fir-4b287-default-rtdb.firebaseio.com/",
+  };
+   firebase.initializeApp(firebaseConfig );
+  
+   
+/**
+ * 要寫入 Firebase 的資料物件。
+ */
+var data = {sender: null, timestamp: null, lat: null, lng: null};
+
+function makeInfoBox(controlDiv, map) {
+  // 設定控制項邊框的 CSS。
+  var controlUI = document.createElement('div');
+  controlUI.style.boxShadow = 'rgba(0, 0, 0, 0.298039) 0px 1px 4px -1px';
+  controlUI.style.backgroundColor = '#fff';
+  controlUI.style.border = '2px solid #fff';
+  controlUI.style.borderRadius = '2px';
+  controlUI.style.marginBottom = '22px';
+  controlUI.style.marginTop = '10px';
+  controlUI.style.textAlign = 'center';
+  controlDiv.appendChild(controlUI);
+
+  // 設定控制項內部的 CSS。
+  var controlText = document.createElement('div');
+  controlText.style.color = 'rgb(25,25,25)';
+  controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+  controlText.style.fontSize = '100%';
+  controlText.style.padding = '6px';
+  controlText.textContent =
+      '地圖顯示過去 10 分鐘內的所有點擊。';
+  controlUI.appendChild(controlText);
+}
+
+      /**
+      * 程式運作起點。 對使用者進行身份驗證。
+      * @param {function()} onAuthSuccess - 驗證成功時呼叫。
+      */
+      function initAuthentication(onAuthSuccess) {
+        firebase.auth().signInAnonymously().catch(function(error) {
+          console.log(error.code + ', ' + error.message);
+        }, {remember: 'sessionOnly'});
+
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            data.sender = user.uid;
+            onAuthSuccess();
+          } else {
+            // 使用者登出
+          }
+        });
+      }
+      /**
+       * 建立具有點擊監聽器和熱圖的地圖物件。
+       */
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat:25.0676843 ,lng: 121.5280133},
+          zoom: 4,
+          styles: [{
+            featureType: 'poi',
+            stylers: [{ visibility: 'off' }]  // 關閉 POI.
+          },
+          {
+            featureType: 'transit.station',
+            stylers: [{ visibility: 'off' }]  // 關閉 bus, train stations 等.
+          }],
+          disableDoubleClickZoom: true,
+          streetViewControl: false,
+        });
+
+        // 建立 DIV 來保存控制項並呼叫 makeInfoBox() 建構函數
+        // 傳入此DIV。
+        var infoBoxDiv = document.createElement('div');
+        makeInfoBox(infoBoxDiv, map);
+        map.controls[google.maps.ControlPosition.TOP_CENTER].push(infoBoxDiv);
+
+        // 監聽點擊並將點擊位置新增至 firebase。
+        map.addListener('click', function(e) {
+          data.lat = e.latLng.lat();
+          data.lng = e.latLng.lng();
+          addToFirebase(data);
+        });
+
+        // 建立熱圖。
+        var heatmap = new google.maps.visualization.HeatmapLayer({
+          data: [],
+          map: map,
+          radius: 16
+        });
+        initAuthentication(initFirebase.bind(undefined, heatmap));
+      }
+
+      /**
+       * 設定 Firebase，刪除早於 expiryMs 的點擊
+       * @param {!google.maps.visualization.HeatmapLayer} 熱圖 熱圖
+       */
+      function initFirebase(heatmap) {
+
+        // 目前時點的前 10 分鐘。
+        var startTime = new Date().getTime() - (60 * 10 * 1000);
+
+        // 參考 Firebase 中的點擊。
+        var clicks = firebase.database().ref('clicks');
+
+        // 監聽點擊並將其添加到熱圖中。
+        clicks.orderByChild('timestamp').startAt(startTime).on('child_added',
+          function(snapshot) {
+            // 從 firebase 獲得點擊。
+            var newPosition = snapshot.val();
+            var point = new google.maps.LatLng(newPosition.lat, newPosition.lng);
+            var elapsedMs = Date.now() - newPosition.timestamp;
+
+            // 將點加入熱圖中。
+            heatmap.getData().push(point);
+
+            // 請求早於到期時點（10 分鐘）的項目。
+            var expiryMs = Math.max(60 * 10 * 1000 - elapsedMs, 0);
+
+            // 設定客戶端逾時以在一定時間後刪除該點。
+            window.setTimeout(function() {
+              // 從資料庫中刪除舊點。
+              snapshot.ref.remove();
+            }, expiryMs);
+          }
+        );
+
+        // 從 firebase 中刪除點時，從熱圖中刪除舊資料。
+        clicks.on('child_removed', function(snapshot, prevChildKey) {
+          var heatmapData = heatmap.getData();
+          var i = 0;
+          while (snapshot.val().lat != heatmapData.getAt(i).lat()
+            || snapshot.val().lng != heatmapData.getAt(i).lng()) {
+            i++;
+          }
+          heatmapData.removeAt(i);
+        });
+      }
+
+      
+       //使用目前時間戳更新 last_message/ 路徑。
+       // @param {function(Date)} addClick 最後一則訊息時間戳更新後，
+       // 使用當前時間戳記呼叫此函數以新增
+       // 點擊Firebase。
+     
+       function getTimestamp(addClick) {
+        // 參考儲存最後點擊時間的位置。
+        var ref = firebase.database().ref('last_message/' + data.sender);
+
+        ref.onDisconnect().remove();  // 斷開連線時從 firebase 中刪除引用。
+
+        // 將值設定為時間戳記。
+        ref.set(firebase.database.ServerValue.TIMESTAMP, function(err) {
+          if (err) {  // 寫入最後一條失敗訊息。
+            console.log(err);
+          } else {  // 寫入最後一條成功訊息。.
+            ref.once('value', function(snap) {
+              addClick(snap.val());  // 新增具有相同時間戳的點擊。
+            }, function(err) {
+              console.warn(err);
+            });
+          }
+        });
+      }
+
+      /**
+        * 新增點擊到 firebase。
+        * @param {Object} data 要新增到 firebase 的資料。
+        * 其包含緯度、經度、發送者和時間戳記。
+       */
+      function addToFirebase(data) {
+        getTimestamp(function(timestamp) {
+          // 將新的時間戳記新增至記錄資料。
+          data.timestamp = timestamp;
+          var ref = firebase.database().ref('clicks').push(data, function(err) {
+            if (err) {  // 資料未寫入 firebase。
+              console.warn(err);
+            }
+          });
+        });
+      }
+    </script>
+     <script 
+     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpAqja_IdyYYjkHPCp7WonW1ToQBDNNuc&libraries=visualization&callback=initMap&v=weekly"
+         async defer
+     ></script>>
+   
+  </body>
+</html>
