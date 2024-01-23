@@ -15,7 +15,7 @@
               justify-content: center;
               flex-direction:column;
               color:#fff;
-              background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(15,254,179,1) 26%, rgba(208,253,255,1) 47%, rgba(0,212,255,1) 100%);
+              background-color:#000000;
           }
           #clear {
                 position: absolute;
@@ -53,6 +53,7 @@
             if (autocInput) {
                 map.controls[google.maps.ControlPosition.LEFT_TOP].push(document.getElementById('bar'));
                 let autocomplete = new google.maps.places.Autocomplete(autocInput);
+                autocInput.setAttribute('placeholder', '用地址跳轉到欲選取的範圍');
                 autocomplete.bindTo('bounds', map);
                 autocomplete.addListener('place_changed', function () {
                     let place = autocomplete.getPlace();
@@ -60,7 +61,7 @@
                         map.fitBounds(place.geometry.viewport);
                     } else {
                         map.setCenter(place.geometry.location);
-                        map.setZoom(15);
+                        map.setZoom(10);
                     }
                 });
             } else {
