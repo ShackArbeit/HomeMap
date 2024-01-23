@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <title>Place Details Example</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpAqja_IdyYYjkHPCp7WonW1ToQBDNNuc&libraries=places"></script>
+</head>
+<body>
+    <iframe src="../Layout/Header.html" width="100%" height="64px"  frameborder="0"></iframe>
+    <div style="display:flex;flex-direction:row;position:relative; bottom:6px;height:100vh"> 
+         <div style="width:20vw;height:100vh;padding-top:50px;">
+            <div style="display:flex;flex-direction:column">
+                <h3><label for="placeInput" class="mb-3">輸入地點地址</label></h3>
+                <input type="text" id="placeInput" placeholder="Type a city name" class="mb-3">
+                <button id="getDetailsButton" class="btn btn-primary">取得資訊</button>
+                <div id="placeDetails" ></div>
+            </div>
+        </div>
+        <div style="width:80vw;height:100vh;display:flex;">
+                <div id="map" style="width:50%;height:100vh"></div>
+                <div id="images" style="width:50%;height:100vh"></div>
+        </div>
+    </div>
+    <script>
+        let PlaceId,map
+        let autocomplete,makerr
+
+        document.getElementById('getDetailsButton').addEventListener('click', getPlaceDetails);
+
+
+       async function initMap(){
+        const position = { lat:25.0676843 ,lng: 121.5280133 };
+        const { Map } = await google.maps.importLibrary("maps");
+        const { Marker } = await google.maps.importLibrary("marker");
+                map = new Map(document.getElementById('map'), {
+                zoom: 8,
+                center: position,
+                mapId: '46b530e75dd3cc36',
+            });
+            autocomplete = new google.maps.places.Autocomplete(document.getElementById('placeInput'));
+            autocomplete.bindTo('bounds', map);
+                autocomplete.addListener('place_changed', function () {
+                    let place = autocomplete.getPlace();
+                    if (place.geometry.viewport) {
+                        map.fitBounds(place.geometry.viewport);
+                        marker=new Marker({
+                             map:map,
+                             position:place.geometry.location
+                         })
+                    } else {
+                        map.setCenter(place.geometry.location);
+                        map.setZoom(12);
+                    }
+                });
+       }
+       initMap()
+           
+
+    
+
+        function getPlaceDetails() {
+            const autoInput = document.getElementById('placeInput').value;
+            const placeDetailsContainer = document.getElementById('placeDetails');
+            const imageContainer=document.getElementById("images")
+
+            const service = new google.maps.places.PlacesService(document.createElement('div'));
+            const place = autocomplete.getPlace();
+            console.log(place)
+            if (place && place.place_id) {
+                PlaceId = place.place_id;
+                console.log(PlaceId);
+                const request = {
+                    placeId: PlaceId,
+                    fields: ['name', 'formatted_address', 'geometry', 'photos', 'opening_hours', 'place_id', 'types']
+                };
+
+                service.getDetails(request, (place, status) => {
+                    if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        console.log(place);
+
+                        placeDetailsContainer.innerHTML = `
+                            <p>Name: ${place.name}</p>
+                            <p>Address: ${place.formatted_address}</p>
+                            <p>Location: ${JSON.stringify(place.geometry.location)}</p>
+                            <p>Place ID: ${place.place_id}</p>
+                            <p>Types: ${place.types.join(', ')}</p>
+                        `;
+                        if (place.photos && place.photos.length > 0) {
+                            imageContainer.innerHTML += '<p>全部圖片如下:</p>';
+                            for (const photo of place.photos) {
+                                images.innerHTML +=
+                                    `<img src="${photo.getUrl()}" alt="Place Photo" style="width:600px;height:600px">`;
+                            }
+                        } else {
+                            placeDetailsContainer.innerHTML += '<p>No photos available.</p>';
+                        }
+                    } else {
+                        placeDetailsContainer.innerHTML = 'Place details not found.';
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

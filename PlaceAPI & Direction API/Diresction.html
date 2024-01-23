@@ -108,6 +108,7 @@
     directionsService.route(request, function (result, status) {
         if (status === 'OK') {
             directionsRenderer.setDirections(result);
+            console.log(result)
             console.log(result.routes[0].legs[0].distance);
             console.log(result.routes[0].legs[0].duration);
             console.log(result.routes[0].legs[0].steps);
@@ -134,8 +135,6 @@
             Dest.value = '';
             directionsRenderer.setMap(null);
         }
-        //     directionsRenderer.setMap(null);
-        // }}
     </script>
 </body>
 </html>
