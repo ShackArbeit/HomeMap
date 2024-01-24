@@ -15,12 +15,28 @@
             height:70px;
         }
 
-        .carousel-control-prev-icon {
+        /* .carousel-control-prev-icon {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23your_desired_color' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath d='M7 0a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V1a1 1 0 0 1 1-1h6zM2.5 1.7L4.8 4l-2.3 2.3a.5.5 0 0 0 0 .7l.7.7a.5.5 0 0 0 .7 0L6 4.7V4.5L4.2 2.7a.5.5 0 0 0-.7 0L2.5 4.2l-.7-.7z'/%3e%3c/svg%3e");
         }
 
         .carousel-control-next-icon {
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23your_desired_color' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath d='M1 0a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1H1zM4.2 1.7L2 4l2.2 2.3a.5.5 0 0 0 .7 0l.7-.7a.5.5 0 0 0 0-.7L3.2 4.5 4.5 3.2a.5.5 0 0 0 0-.7l-.7-.7a.5.5 0 0 0-.6-.1z'/%3e%3c/svg%3e");
+        } */
+        #images{
+            display:none;
+            border:2px solid #52aaff;
+            position: absolute;
+            width:800px;
+            height:600px;
+            top:10%;
+            left:35%;
+        }
+        #close{
+            font-size:35px;
+            position: absolute;
+            top:5%;
+            left:80%;
+            display:none;
         }
     </style>
 </head>
@@ -38,14 +54,15 @@
             </div>
         </div>
         <div style="width:80vw;height:100vh">
-            <div id="map" style="width:100%;height:50%"></div>
-            <div id="images" style="width:100%;height:50%"></div>
+            <div id="map" style="width:100%;height:100vh"></div>
         </div>
+        <div id="images"></div>
+        <div id="close"  onclick="closePopup()">❌</div>
     </div>
 
     <script>
         let PlaceId, map, operatorNumber;
-        let autocomplete, makerr, webSite;
+        let autocomplete, makerr, webSite,placeDetailsContainer,imageContainer
 
         document.getElementById('getDetailsButton').addEventListener('click', getPlaceDetails);
 
@@ -84,19 +101,23 @@
         }
         initMap();
 
+
+
         function getPlaceDetails() {
             const autoInput = document.getElementById('placeInput').value;
-            const placeDetailsContainer = document.getElementById('placeDetails');
-            const imageContainer = document.getElementById("images");
+             placeDetailsContainer = document.getElementById('placeDetails');
+             imageContainer = document.getElementById("images");
 
             const service = new google.maps.places.PlacesService(document.createElement('div'));
             const place = autocomplete.getPlace();
+            const closeIcon = document.getElementById("close");
             console.log(place);
             webSite = place.website;
             operatorNumber = place.formatted_phone_number;
             if (place && place.place_id) {
                 PlaceId = place.place_id;
                 console.log(PlaceId);
+                imageContainer.style.display='block'
                 const request = {
                     placeId: PlaceId,
                     fields: ['name', 'formatted_address', 'geometry', 'photos', 'opening_hours', 'place_id', 'types']
@@ -105,6 +126,7 @@
                 service.getDetails(request, (place, status) => {
                     if (status === google.maps.places.PlacesServiceStatus.OK) {
                         console.log(place);
+                        closeIcon.style.display='block';
                         placeDetailsContainer.innerHTML = `
                             <div class="list-group">
                                 <button type="button" class="list-group-item list-group-item-action active" aria-current="true">
@@ -124,7 +146,7 @@
                                         ${place.photos.map((photo, index) => `
                                             <div class="carousel-item ${index === 0 ? 'active' : ''}">
                                                 <img src="${photo.getUrl()}" alt="Place Photo" 
-                                                    class='d-block w-100'
+                                                    style="width:800px;height:600px"
                                                 >
                                             </div>
                                         `).join('')}
@@ -147,6 +169,19 @@
                     }
                 });
             }
+        }
+    
+       
+        
+        function closePopup() {
+             placeDetailsContainer = document.getElementById('placeDetails');
+             imageContainer = document.getElementById("images");
+            const closeIcon = document.getElementById("close");
+
+            placeDetailsContainer.style.display = 'none';
+            imageContainer.style.display = 'none';
+            closeIcon.style.display = 'none';
+            console.log('正常驅動')
         }
     </script>
 </body>
